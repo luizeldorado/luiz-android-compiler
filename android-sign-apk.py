@@ -1,7 +1,7 @@
 import argparse
 import os, subprocess
 
-parser = argparse.ArgumentParser(description='Aligns a APK')
+parser = argparse.ArgumentParser(description='Signs a APK')
 parser.add_argument('apk', help='apk file')
 parser.add_argument('keystore', help='keystore file')
 parser.add_argument('--sdk', help='android sdk path')
