@@ -51,7 +51,9 @@ def main(args):
 	print("Compiling...")
 
 	# TODO: loop through all files
-	c = subprocess.call([dir_javac, "-d", "obj", "-classpath", "src", "-bootclasspath", dir_platform, dir_packaging + R"""\MainActivity.java"""],
+	c = subprocess.call([dir_javac, "-d", "obj", "-classpath", "src", "-bootclasspath", dir_platform,
+		dir_packaging + R"""\MainActivity.java""",
+		],
 		cwd = dir_project)
 	if c != 0: exit()
 
@@ -79,4 +81,4 @@ def main(args):
 
 if __name__ == "__main__":
 
-	main(sys.argv)
+	main(sys.argv[1:])
