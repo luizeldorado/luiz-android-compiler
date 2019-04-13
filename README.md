@@ -1,49 +1,57 @@
-# Python Android Compiler Scripts
+# Luiz's Android Compiler
 
-Some scripts written in Python to help you compile Android projects into APKs. **They are not finished**, please look into the code before executing any of them, change it as needed.
+Bunch of scripts written in Python that help you develop Android applications. You can make, compile, and run Android apps without needing a heavy program like Eclipse or Android Studio.
 
-You'll need to download the Android SDK in https://developer.android.com/studio/#command-tools. In the "Command line tools only" you'll find the download for your operating system. You will also need some other tools that can be downloaded using the [*sdkmanager*](https://developer.android.com/studio/command-line/sdkmanager) that comes with the SDK.
+## Requeriments
 
-# How to use them
+- Windows, probably.
+- Python 3: https://www.python.org/downloads/
+- Java Development Kit: https://www.oracle.com/technetwork/java/javase/downloads/index.html
+- Android SDK command line tools: https://developer.android.com/studio/#command-tools
+	- Android SDK Build Tools ("build-tools;[version]")
+	- Android SDK Platform Tools ("platform-tools")
+	- Android SDK Platform ("platforms;android-[version]")
 
-## Avaliable scripts
+## Scripts
 
-**android-build-apk** project package [--sdk SDK] [--buildtool BUILDTOOL] [--platform PLATFORM]
+`android-new-project.py name package`
 
-Builds an APK for the project, placing it in the /bin folder of the project.
+Creates a new Android project folder.
 
-**android-new-project** name package
+`android-build.py project package keystore [--sdk SDK] [--buildtool BUILDTOOL] [--platform PLATFORM]`
 
-Creats folder called name, with a project with the *package* folder structure.
+Build the project into an APK.
 
-**android-align-apk** apk [--sdk SDK] [--buildtool BUILDTOOL]
+`android-launch.py project package [--sdk SDK]`
 
-Aligns an APK, making it smaller.
+Installs and launches the project on the default ADB device.
 
-**android-sign-apk** apk keystore [--sdk SDK] [--buildtool BUILDTOOL]
+`android-build-and-launch.py project package keystore [--sdk SDK] [--buildtool BUILDTOOL] [--platform PLATFORM]`
 
-Signs an APK with the keystore file.
+Does these two things.
 
-**android-launch** apk [--sdk SDK] [--buildtool BUILDTOOL]
+`android.py` is used by the other scripts, containing the main functionality.
 
-Installs and launches an APK to an ADB connected device.
+### Common arguments
 
-## Argument explanation
+`name` or `project` is a directory path where an Android project is located.
 
-**project**: Folder where the whole project is on. Must follow a specific format, like the one created by using android-new-project.
+`package` is a qualified Android package name (e.g. *com.example.hellothere*).
 
-**package**: Currently, it only supports one package per project. Use the dot separated format, e.g. *com.example.hellothere*.
+`keystore` is a keystore file path.
 
-**apk**: APK file location.
+`sdk` is the location of the Android SDK. If ommited, it will look in the ANDROID_SDK_ROOT enviroment variable by default.
 
-**--sdk SDK**: By default, the scripts will use the ANDROID_SDK_HOME enviroment variable for the location of the Android SDK. Using --sdk, you can manually select the location.
+`buildtool` is the build tools version to be used. If ommited, it will select the most recent one.
 
-**--buildtool BUILDTOOL**: Folder inside the 'build-tools' directory with the version you want to use. The name is generally the version, e.g. "28.0.3".
+`platform` is the platform version to be used. If ommited, it will select the most recent one.
 
-**--platform PLATFORM**: Folder inside the 'platforms' directory with the API level you want to use. The name is generally 'android-' plus the API level number, e.g. "android-28".
-
-# Objective
+# The point of this
 
 Who needs Android Studio anyway?
 
 The point is for people to be able to make their apps in an open enviroment, allowing them to see and change any part of the process as they please. It's a mid point between doing everything manually and using an IDE for everything. Come on, Eclipse is like 1 GB in size!
+
+The build process of an Android app is complicated, but here I've simplified it. You can still look into the scripts to see what's going on, I tried to make it as neat as possible.
+
+I don't wanna make a IDE with a GUI, but just simple tools that can help you out, not do literally everything for you. So this could be expanded by allowing automatic creation of layouts and activities, code linting, keystore creation, and much more. That the plan, bro. 
