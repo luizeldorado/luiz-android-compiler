@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess, shutil
 
 class Project:
 	def __init__(self, dir_project, package, dir_sdk, ver_buildtool, ver_platform, dir_keystore):
@@ -172,6 +172,8 @@ def make_androidmanifest_xml(project):
 
 def make_r_java(project):
 
+	# os.remove(os.path.join(get_dir_src_package(project), "R.java"))
+
 	subprocess.check_call(
 		[
 			get_dir_aapt(project), "package", "-f", "-m",
@@ -183,6 +185,9 @@ def make_r_java(project):
 	)
 
 def make_classes(project):
+
+	shutil.rmtree(get_dir_obj(project))
+	os.makedirs(get_dir_obj(project))
 
 	subprocess.check_call(
 		[
@@ -197,6 +202,8 @@ def make_classes(project):
 
 def make_dex(project):
 
+	# os.remove(get_dir_classes_dex(project))
+
 	subprocess.check_call(
 		[
 			get_dir_dx(project), "--dex",
@@ -206,6 +213,8 @@ def make_dex(project):
 	)
 
 def make_apk(project):
+
+	# os.remove(get_dir_apk(project))
 
 	subprocess.check_call(
 		[
