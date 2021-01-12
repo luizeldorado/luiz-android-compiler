@@ -189,12 +189,18 @@ def make_classes(project):
 	shutil.rmtree(get_dir_obj(project))
 	os.makedirs(get_dir_obj(project))
 
+	# -bootclasspath is deprecated, I'm not sure how to replace it properly, just putting it in the classpath now.
+	# I'm having to use Java 11, d8 doesn't work with anything higher, don't know why.
+
 	subprocess.check_call(
 		[
 			get_dir_javac(project),
 			"-d", get_dir_obj(project),
-			"-classpath", get_dir_src(project),
-			"-bootclasspath", get_dir_android_jar(project),
+			"-classpath", ";".join([get_dir_android_jar(project), get_dir_src(project)]),
+			# "-classpath", get_dir_src(project),
+			# "-bootclasspath", get_dir_android_jar(project),
+			"-source", "11",
+			"-target", "11",
 			os.path.join(get_dir_src_package(project), "*.java"),
 			os.path.join(get_dir_src_package(project), "R.java"),
 		],
@@ -204,6 +210,40 @@ def make_dex(project):
 
 	# os.remove(get_dir_classes_dex(project))
 
+	# Aparently d8.bat and dx.bat are bugged and require manual adjustments to work. Because of that I'm directly calling the jar file from here.
+
+	#'''
+	buildlib = os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "lib")
+	d8jar = os.path.join(buildlib, "d8.jar")
+
+	subprocess.check_call(
+		[
+			"java",
+			"-classpath", ";".join([buildlib, d8jar]),
+			"com.android.tools.r8.D8",
+			os.path.join(get_dir_obj(project), project.package.replace(".", os.sep), "*.class"),
+			"--release",
+			"--output", project.dir_project,
+			"--lib", get_dir_android_jar(project),
+			"--classpath", get_dir_src(project),
+		]
+	)
+	#'''
+
+	'''
+	subprocess.check_call(
+		[
+			get_dir_d8(project),
+			os.path.join(get_dir_obj(project), project.package.replace(".", os.sep), "*.class"),
+			"--release",
+			"--output", project.dir_project,
+			"--lib", get_dir_android_jar(project),
+			# "--classpath", get_dir_src(project),
+		]
+	)
+	'''
+
+	'''
 	subprocess.check_call(
 		[
 			get_dir_dx(project), "--dex",
@@ -211,6 +251,7 @@ def make_dex(project):
 			get_dir_obj(project)
 		]
 	)
+	'''
 
 def make_apk(project):
 
@@ -228,7 +269,9 @@ def make_apk(project):
 	
 	subprocess.check_call(
 		[
-			get_dir_aapt(project), "add", "-k", get_dir_apk(project), get_dir_classes_dex(project)
+			get_dir_aapt(project), "add", "-k",
+			get_dir_apk(project),
+			get_dir_classes_dex(project)
 		]
 	)
 
@@ -274,7 +317,7 @@ def adb_launch(project):
 ## getting stuff
 
 def get_dir_aapt(project):
-	return os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "aapt.exe")
+	return os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "aapt")
 
 def get_dir_javac(project):
 	return "javac"
@@ -282,14 +325,17 @@ def get_dir_javac(project):
 def get_dir_dx(project):
 	return os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "dx.bat")
 
+def get_dir_d8(project):
+	return os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "d8.bat")
+
 def get_dir_zipalign(project):
-	return os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "zipalign.exe")
+	return os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "zipalign")
 
 def get_dir_apksigner(project):
 	return os.path.join(project.dir_sdk, "build-tools", project.ver_buildtool, "apksigner.bat")
 
 def get_dir_adb(project):
-	return os.path.join(project.dir_sdk, "platform-tools", "adb.exe")
+	return os.path.join(project.dir_sdk, "platform-tools", "adb")
 
 
 def get_dir_src(project):
@@ -326,6 +372,3 @@ def get_dir_android_jar(project):
 
 def get_name(project):
 	return os.path.basename(project.dir_project)
-
-###################
-
